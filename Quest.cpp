@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <limits> // For numeric_limits
 using namespace std;
 
 // Class representing an Astronaut
@@ -12,25 +13,38 @@ private:
 
 public:
     // Constructor
-    Astronaut(string n, string r, int h, int e) : name(n), role(r), health(h), energy(e) {}
+    Astronaut(string n = "", string r = "", int h = 100, int e = 100)
+        : name(n), role(r), health(h), energy(e) {}
 
-    // Member function to perform a task using 'this' pointer
-    void performTask(string task) {
-        cout << this->name << " is performing the task: " << task << " as a " << this->role << "." << endl;
-        this->energy -= 10;  // Task consumes energy
+    // Getter for name
+    string getName() const {
+        return name;
     }
 
-    // Member function to report the current status of the astronaut using 'this' pointer
-    void reportStatus() {
-        cout << "Astronaut " << this->name << " (Role: " << this->role << ") has " << this->health 
-             << " health and " << this->energy << " energy remaining." << endl;
+    // Getter for role
+    string getRole() const {
+        return role;
     }
 
-    // Setters
-    void setName(string n) { this->name = n; }
-    void setRole(string r) { this->role = r; }
-    void setHealth(int h) { this->health = h; }
-    void setEnergy(int e) { this->energy = e; }
+    // Member function to perform a task
+    void performTask(const string& task) {
+        cout << name << " is performing the task: " << task << " as a " << role << "." << endl;
+        energy -= 10; // Task consumes energy
+    }
+
+    // Member function to report the current status of the astronaut
+    void reportStatus() const {
+        cout << "Astronaut " << name << " (Role: " << role << ") has " 
+             << health << " health and " << energy << " energy remaining." << endl;
+    }
+
+    // Function to update astronaut details
+    void updateDetails(const string& n, const string& r, int h, int e) {
+        name = n;
+        role = r;
+        health = h;
+        energy = e;
+    }
 };
 
 // Class representing the Spaceship
@@ -42,74 +56,93 @@ private:
 
 public:
     // Constructor
-    Spaceship(string n, int f, int o) : name(n), fuel(f), oxygen(o) {}
+    Spaceship(string n = "", int f = 1000, int o = 1000)
+        : name(n), fuel(f), oxygen(o) {}
 
-    // Member function to allocate resources using 'this' pointer
-    void allocateResource(string resource, int amount) {
+    // Member function to allocate resources
+    void allocateResource(const string& resource, int amount) {
         if (resource == "fuel") {
-            this->fuel -= amount;
-            cout << "Allocated " << amount << " units of fuel. Fuel remaining: " << this->fuel << "." << endl;
+            fuel -= amount;
+            cout << "Allocated " << amount << " units of fuel. Fuel remaining: " << fuel << "." << endl;
         } else if (resource == "oxygen") {
-            this->oxygen -= amount;
-            cout << "Allocated " << amount << " units of oxygen. Oxygen remaining: " << this->oxygen << "." << endl;
+            oxygen -= amount;
+            cout << "Allocated " << amount << " units of oxygen. Oxygen remaining: " << oxygen << "." << endl;
+        } else {
+            cout << "Unknown resource type." << endl;
         }
     }
 
-    // Member function to check the spaceship's status using 'this' pointer
-    void checkStatus() {
-        cout << "Spaceship " << this->name << " has " << this->fuel << " units of fuel and " 
-             << this->oxygen << " units of oxygen remaining." << endl;
+    // Member function to check the spaceship's status
+    void checkStatus() const {
+        cout << "Spaceship " << name << " has " << fuel << " units of fuel and " 
+             << oxygen << " units of oxygen remaining." << endl;
     }
-
-    // Setters
-    void setName(string n) { this->name = n; }
-    void setFuel(int f) { this->fuel = f; }
-    void setOxygen(int o) { this->oxygen = o; }
 };
 
+// Function to get valid integer input from the user
+int getValidIntInput() {
+    int value;
+    while (true) {
+        cin >> value;
+        if (cin.fail()) {
+            cin.clear(); // Clear the error flag
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard invalid input
+            cout << "Invalid input. Please enter a valid integer: ";
+        } else {
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard leftover input
+            return value;
+        }
+    }
+}
+
 int main() {
-    string name, role, resource;
-    int health, energy, fuel, oxygen, amount;
+    // Create an array of Astronaut objects
+    const int numAstronauts = 2;
+    Astronaut astronauts[numAstronauts];
 
-    // Input for Astronaut
-    cout << "Enter the name of the astronaut: ";
-    getline(cin, name);
-    cout << "Enter the role of the astronaut: ";
-    getline(cin, role);
-    cout << "Enter the health of the astronaut: ";
-    cin >> health;
-    cout << "Enter the energy of the astronaut: ";
-    cin >> energy;
-    cin.ignore(); // To ignore the remaining newline character in the input buffer
+    // Get astronaut details from the user
+    for (int i = 0; i < numAstronauts; ++i) {
+        string name, role;
+        int health, energy;
 
-    // Creating an Astronaut object
-    Astronaut astronaut1(name, role, health, energy);
-    
-    // Performing tasks with astronaut object
-    cout << "Enter a task for the astronaut: ";
-    getline(cin, role); // Reusing role input for the task description
-    astronaut1.performTask(role);
-    astronaut1.reportStatus();
+        cout << "Enter details for Astronaut " << (i + 1) << ":" << endl;
 
-    // Input for Spaceship
-    cout << "Enter the name of the spaceship: ";
-    getline(cin, name);
-    cout << "Enter the amount of fuel: ";
-    cin >> fuel;
-    cout << "Enter the amount of oxygen: ";
-    cin >> oxygen;
-    cin.ignore(); // To ignore the remaining newline character in the input buffer
+        cout << "Name: ";
+        getline(cin, name);
+        cout << "Role: ";
+        getline(cin, role);
 
-    // Creating a Spaceship object
-    Spaceship spaceship1(name, fuel, oxygen);
-    
-    // Allocating resources
-    cout << "Enter the resource to allocate (fuel/oxygen): ";
-    getline(cin, resource);
-    cout << "Enter the amount to allocate: ";
-    cin >> amount;
-    spaceship1.allocateResource(resource, amount);
-    spaceship1.checkStatus();
+        cout << "Health (integer value): ";
+        health = getValidIntInput();
+
+        cout << "Energy (integer value): ";
+        energy = getValidIntInput();
+
+        astronauts[i].updateDetails(name, role, health, energy);
+    }
+
+    // Create a Spaceship object
+    Spaceship spaceship("Mangalyaan", 500, 300);
+
+    // Perform tasks with astronaut objects
+    for (int i = 0; i < numAstronauts; ++i) {
+        string task;
+        cout << "Enter a task for " << astronauts[i].getName() << ": ";
+        getline(cin, task);
+        astronauts[i].performTask(task);
+        astronauts[i].reportStatus();
+    }
+
+    // Allocate resources and check status of spaceship
+    string resource;
+    int amount;
+
+    cout << "Enter resource type (fuel/oxygen): ";
+    cin >> resource;
+    cout << "Enter amount: ";
+    amount = getValidIntInput();
+    spaceship.allocateResource(resource, amount);
+    spaceship.checkStatus();
 
     return 0;
 }
