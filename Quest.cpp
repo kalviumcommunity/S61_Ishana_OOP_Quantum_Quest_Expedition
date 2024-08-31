@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <limits> // For numeric_limits
+
 using namespace std;
 
 // Class representing an Astronaut
@@ -85,20 +86,23 @@ int getValidIntInput() {
     while (true) {
         cin >> value;
         if (cin.fail()) {
-            cin.clear(); // Clear the error flag
-            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard invalid input
+            cin.clear(); // Clearing the error 
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discarding invalid input
             cout << "Invalid input. Please enter a valid integer: ";
         } else {
-            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard leftover input
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discarding leftover input
             return value;
         }
     }
 }
 
 int main() {
-    // Create an array of Astronaut objects
-    const int numAstronauts = 2;
-    Astronaut astronauts[numAstronauts];
+    int numAstronauts;
+    cout << "Enter the number of astronauts: ";
+    numAstronauts = getValidIntInput();
+
+    // Dynamically allocate an array of Astronaut objects
+    Astronaut* astronauts = new Astronaut[numAstronauts];
 
     // Get astronaut details from the user
     for (int i = 0; i < numAstronauts; ++i) {
@@ -121,8 +125,8 @@ int main() {
         astronauts[i].updateDetails(name, role, health, energy);
     }
 
-    // Create a Spaceship object
-    Spaceship spaceship("Mangalyaan", 500, 300);
+    // Dynamically allocate a Spaceship object
+    Spaceship* spaceship = new Spaceship("Mangalyaan", 500, 300);
 
     // Perform tasks with astronaut objects
     for (int i = 0; i < numAstronauts; ++i) {
@@ -141,8 +145,12 @@ int main() {
     cin >> resource;
     cout << "Enter amount: ";
     amount = getValidIntInput();
-    spaceship.allocateResource(resource, amount);
-    spaceship.checkStatus();
+    spaceship->allocateResource(resource, amount);
+    spaceship->checkStatus();
+
+    // Deallocate dynamically allocated memory
+    delete[] astronauts;
+    delete spaceship;
 
     return 0;
 }
