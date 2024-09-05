@@ -1,7 +1,5 @@
 #include <iostream>
 #include <string>
-#include <limits> // For numeric_limits
-
 using namespace std;
 
 // Class representing an Astronaut
@@ -11,11 +9,14 @@ private:
     string role;
     int health;
     int energy;
+    static int totalAstronauts; // Static variable to track the total number of astronauts
 
 public:
     // Constructor
     Astronaut(string n = "", string r = "", int h = 100, int e = 100)
-        : name(n), role(r), health(h), energy(e) {}
+        : name(n), role(r), health(h), energy(e) {
+        totalAstronauts++; // Increment the count when a new astronaut is created
+    }
 
     // Getter for name
     string getName() const {
@@ -46,7 +47,15 @@ public:
         health = h;
         energy = e;
     }
+
+    // Static function to get the total number of astronauts
+    static int getTotalAstronauts() {
+        return totalAstronauts;
+    }
 };
+
+// Initialize static variable
+int Astronaut::totalAstronauts = 0;
 
 // Class representing the Spaceship
 class Spaceship {
@@ -54,6 +63,7 @@ private:
     string name;
     int fuel;
     int oxygen;
+    static int totalFuelUsed; // Static variable to track the total fuel used across all spaceships
 
 public:
     // Constructor
@@ -64,6 +74,7 @@ public:
     void allocateResource(const string& resource, int amount) {
         if (resource == "fuel") {
             fuel -= amount;
+            totalFuelUsed += amount; // Track the total fuel used
             cout << "Allocated " << amount << " units of fuel. Fuel remaining: " << fuel << "." << endl;
         } else if (resource == "oxygen") {
             oxygen -= amount;
@@ -78,30 +89,23 @@ public:
         cout << "Spaceship " << name << " has " << fuel << " units of fuel and " 
              << oxygen << " units of oxygen remaining." << endl;
     }
+
+    // Static function to get the total fuel used across all spaceships
+    static int getTotalFuelUsed() {
+        return totalFuelUsed;
+    }
 };
 
-// Function to get valid integer input from the user
-int getValidIntInput() {
-    int value;
-    while (true) {
-        cin >> value;
-        if (cin.fail()) {
-            cin.clear(); // Clearing the error 
-            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discarding invalid input
-            cout << "Invalid input. Please enter a valid integer: ";
-        } else {
-            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discarding leftover input
-            return value;
-        }
-    }
-}
+// Initialize static variable
+int Spaceship::totalFuelUsed = 0;
 
 int main() {
+    // Create an array of dynamically allocated Astronaut objects
     int numAstronauts;
     cout << "Enter the number of astronauts: ";
-    numAstronauts = getValidIntInput();
+    cin >> numAstronauts;
+    cin.ignore(); // To ignore the newline character
 
-    // Dynamically allocate an array of Astronaut objects
     Astronaut* astronauts = new Astronaut[numAstronauts];
 
     // Get astronaut details from the user
@@ -117,15 +121,15 @@ int main() {
         getline(cin, role);
 
         cout << "Health (integer value): ";
-        health = getValidIntInput();
-
+        cin >> health;
         cout << "Energy (integer value): ";
-        energy = getValidIntInput();
+        cin >> energy;
+        cin.ignore(); // To ignore the newline character
 
         astronauts[i].updateDetails(name, role, health, energy);
     }
 
-    // Dynamically allocate a Spaceship object
+    // Create a dynamically allocated Spaceship object
     Spaceship* spaceship = new Spaceship("Mangalyaan", 500, 300);
 
     // Perform tasks with astronaut objects
@@ -144,11 +148,15 @@ int main() {
     cout << "Enter resource type (fuel/oxygen): ";
     cin >> resource;
     cout << "Enter amount: ";
-    amount = getValidIntInput();
+    cin >> amount;
     spaceship->allocateResource(resource, amount);
     spaceship->checkStatus();
 
-    // Deallocate dynamically allocated memory
+    // Output static variables
+    cout << "Total Astronauts: " << Astronaut::getTotalAstronauts() << endl;
+    cout << "Total Fuel Used: " << Spaceship::getTotalFuelUsed() << endl;
+
+    // Clean up dynamically allocated memory
     delete[] astronauts;
     delete spaceship;
 
