@@ -48,7 +48,7 @@ public:
         energy = e;
     }
 
-    // Static function to get the total number of astronauts
+    // Static member function to get the total number of astronauts
     static int getTotalAstronauts() {
         return totalAstronauts;
     }
@@ -152,7 +152,7 @@ int main() {
     spaceship->allocateResource(resource, amount);
     spaceship->checkStatus();
 
-    // Output static variables
+    // Output static variables using static member functions
     cout << "Total Astronauts: " << Astronaut::getTotalAstronauts() << endl;
     cout << "Total Fuel Used: " << Spaceship::getTotalFuelUsed() << endl;
 
