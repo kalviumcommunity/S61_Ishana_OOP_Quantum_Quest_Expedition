@@ -2,7 +2,6 @@
 #include <string>
 using namespace std;
 
-// Class representing an Astronaut
 class Astronaut {
 private:
     string name;
@@ -15,22 +14,32 @@ public:
     Astronaut(string n = "", string r = "", int h = 100, int e = 100)
         : name(n), role(r), health(h), energy(e) {}
 
-    // Accessor (Getter) for name
+    // Getters (Accessors) - Public access to private data members
     string getName() const {
         return name;
     }
 
-    // Mutator (Setter) for name
-    void setName(const string& newName) {
-        name = newName;
+    string getRole() const {
+        return role;
     }
 
-    // Accessor (Getter) for health
     int getHealth() const {
         return health;
     }
 
-    // Mutator (Setter) for health with validation
+    int getEnergy() const {
+        return energy;
+    }
+
+    // Setters (Mutators) - Public access to modify private data members
+    void setName(const string& newName) {
+        name = newName;
+    }
+
+    void setRole(const string& newRole) {
+        role = newRole;
+    }
+
     void setHealth(int newHealth) {
         if (newHealth > 0 && newHealth <= 100) {
             health = newHealth;
@@ -39,14 +48,21 @@ public:
         }
     }
 
-    // Report astronaut's status
+    void setEnergy(int newEnergy) {
+        if (newEnergy >= 0 && newEnergy <= 100) {
+            energy = newEnergy;
+        } else {
+            cout << "Invalid energy value. Must be between 0 and 100." << endl;
+        }
+    }
+
+    // Report function to show astronaut's status
     void reportStatus() const {
-        cout << "Astronaut " << name << " (Role: " << role << ") has " 
+        cout << "Astronaut " << name << " (" << role << ") has " 
              << health << " health and " << energy << " energy remaining." << endl;
     }
 };
 
-// Class representing the Spaceship
 class Spaceship {
 private:
     string name;
@@ -58,12 +74,20 @@ public:
     Spaceship(string n = "", int f = 1000, int o = 1000)
         : name(n), fuel(f), oxygen(o) {}
 
-    // Accessor (Getter) for fuel
+    // Getters for Spaceship
     int getFuel() const {
         return fuel;
     }
 
-    // Mutator (Setter) for fuel with validation
+    int getOxygen() const {
+        return oxygen;
+    }
+
+    string getName() const {
+        return name;
+    }
+
+    // Setters for Spaceship
     void setFuel(int newFuel) {
         if (newFuel >= 0) {
             fuel = newFuel;
@@ -72,12 +96,6 @@ public:
         }
     }
 
-    // Accessor (Getter) for oxygen
-    int getOxygen() const {
-        return oxygen;
-    }
-
-    // Mutator (Setter) for oxygen with validation
     void setOxygen(int newOxygen) {
         if (newOxygen >= 0) {
             oxygen = newOxygen;
@@ -86,31 +104,40 @@ public:
         }
     }
 
-    // Report spaceship's status
+    // Report function to show spaceship's status
     void checkStatus() const {
         cout << "Spaceship " << name << " has " << fuel << " units of fuel and " 
              << oxygen << " units of oxygen remaining." << endl;
     }
 };
 
+// Main function to simulate user interaction
 int main() {
-    // Create Astronaut object and prompt user to input details
+    // Creating astronaut object and collecting user input
     Astronaut astronaut;
-    string astronautName;
-    int astronautHealth;
+    string astronautName, astronautRole;
+    int astronautHealth, astronautEnergy;
 
     cout << "Enter the astronaut's name: ";
     getline(cin, astronautName);
     astronaut.setName(astronautName);
 
+    cout << "Enter the astronaut's role: ";
+    getline(cin, astronautRole);
+    astronaut.setRole(astronautRole);
+
     cout << "Enter the astronaut's health (1-100): ";
     cin >> astronautHealth;
     astronaut.setHealth(astronautHealth);
 
-    // Report astronaut status
+    cout << "Enter the astronaut's energy (0-100): ";
+    cin >> astronautEnergy;
+    astronaut.setEnergy(astronautEnergy);
+
+    // Report astronaut's status
     astronaut.reportStatus();
 
-    // Create Spaceship object and prompt user to input fuel and oxygen
+    // Creating spaceship object and collecting user input
     Spaceship spaceship("Mangalyaan");
     int spaceshipFuel, spaceshipOxygen;
 
@@ -122,7 +149,7 @@ int main() {
     cin >> spaceshipOxygen;
     spaceship.setOxygen(spaceshipOxygen);
 
-    // Check spaceship status
+    // Report spaceship's status
     spaceship.checkStatus();
 
     return 0;
