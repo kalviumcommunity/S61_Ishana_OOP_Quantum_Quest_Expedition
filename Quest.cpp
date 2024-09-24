@@ -2,6 +2,7 @@
 #include <string>
 using namespace std;
 
+// Astronaut Class
 class Astronaut {
 private:
     string name;
@@ -10,28 +11,28 @@ private:
     int energy;
 
 public:
-    // Constructor
-    Astronaut(string n = "", string r = "", int h = 100, int e = 100)
-        : name(n), role(r), health(h), energy(e) {}
-
-    // Getters (Accessors) - Public access to private data members
-    string getName() const {
-        return name;
+    // Default Constructor
+    Astronaut() {
+        name = "";
+        role = "";
+        health = 100;
+        energy = 100;
     }
 
-    string getRole() const {
-        return role;
+    // Parameterized Constructor
+    Astronaut(string n, string r, int h, int e) {
+        name = n;
+        role = r;
+        health = h;
+        energy = e;
     }
 
-    int getHealth() const {
-        return health;
+    // Destructor
+    ~Astronaut() {
+        cout << "Astronaut " << name << " is no longer part of the mission." << endl;
     }
 
-    int getEnergy() const {
-        return energy;
-    }
-
-    // Setters (Mutators) - Public access to modify private data members
+    // Getter and Setter Methods
     void setName(const string& newName) {
         name = newName;
     }
@@ -56,13 +57,13 @@ public:
         }
     }
 
-    // Report function to show astronaut's status
     void reportStatus() const {
         cout << "Astronaut " << name << " (" << role << ") has " 
              << health << " health and " << energy << " energy remaining." << endl;
     }
 };
 
+// Spaceship Class
 class Spaceship {
 private:
     string name;
@@ -70,24 +71,19 @@ private:
     int oxygen;
 
 public:
-    // Constructor
-    Spaceship(string n = "", int f = 1000, int o = 1000)
-        : name(n), fuel(f), oxygen(o) {}
-
-    // Getters for Spaceship
-    int getFuel() const {
-        return fuel;
+    // Parameterized Constructor
+    Spaceship(string n, int f, int o) {
+        name = n;
+        fuel = f;
+        oxygen = o;
+        cout << "Spaceship " << name << " created with fuel: " << fuel << " and oxygen: " << oxygen << "." << endl;
     }
 
-    int getOxygen() const {
-        return oxygen;
+    // Destructor
+    ~Spaceship() {
+        cout << "Spaceship " << name << " is decommissioned." << endl;
     }
 
-    string getName() const {
-        return name;
-    }
-
-    // Setters for Spaceship
     void setFuel(int newFuel) {
         if (newFuel >= 0) {
             fuel = newFuel;
@@ -104,52 +100,33 @@ public:
         }
     }
 
-    // Report function to show spaceship's status
     void checkStatus() const {
         cout << "Spaceship " << name << " has " << fuel << " units of fuel and " 
              << oxygen << " units of oxygen remaining." << endl;
     }
 };
 
-// Main function to simulate user interaction
+// Main Function to Run the Simulation
 int main() {
-    // Creating astronaut object and collecting user input
-    Astronaut astronaut;
+    // Collect user input for parameterized constructor
     string astronautName, astronautRole;
     int astronautHealth, astronautEnergy;
 
-    cout << "Enter the astronaut's name: ";
+    cout << "\nEnter the astronaut's name: ";
     getline(cin, astronautName);
-    astronaut.setName(astronautName);
-
     cout << "Enter the astronaut's role: ";
     getline(cin, astronautRole);
-    astronaut.setRole(astronautRole);
-
     cout << "Enter the astronaut's health (1-100): ";
     cin >> astronautHealth;
-    astronaut.setHealth(astronautHealth);
-
     cout << "Enter the astronaut's energy (0-100): ";
     cin >> astronautEnergy;
-    astronaut.setEnergy(astronautEnergy);
 
-    // Report astronaut's status
-    astronaut.reportStatus();
+    // Parameterized constructor call
+    Astronaut astronaut2(astronautName, astronautRole, astronautHealth, astronautEnergy);
+    astronaut2.reportStatus();
 
-    // Creating spaceship object and collecting user input
-    Spaceship spaceship("Mangalyaan");
-    int spaceshipFuel, spaceshipOxygen;
-
-    cout << "Enter fuel for the spaceship: ";
-    cin >> spaceshipFuel;
-    spaceship.setFuel(spaceshipFuel);
-
-    cout << "Enter oxygen for the spaceship: ";
-    cin >> spaceshipOxygen;
-    spaceship.setOxygen(spaceshipOxygen);
-
-    // Report spaceship's status
+    // Create spaceship with parameterized constructor
+    Spaceship spaceship("Apollo", 500, 1000);
     spaceship.checkStatus();
 
     return 0;
