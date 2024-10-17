@@ -2,100 +2,115 @@
 #include <string>
 using namespace std;
 
-// Base Class
-class Astronaut {
+// Abstract Base Class (with pure virtual function)
+class MissionRole {
 protected:
     string name;
     int health;
     int energy;
 
 public:
-    // Default Constructor
-    Astronaut() : name(""), health(100), energy(100) {}
+    // Constructor
+    MissionRole(string n, int h, int e) : name(n), health(h), energy(e) {}
 
-    // Parameterized Constructor (Polymorphism: Constructor Overloading)
-    Astronaut(string n, int h, int e) : name(n), health(h), energy(e) {}
-
-    // Function to display status (can be overridden)
-    virtual void displayStatus() const {
-        cout << "Astronaut " << name << " has " << health << "% health and " << energy << "% energy." << endl;
-    }
+    // Pure Virtual Function (making this class abstract)
+    virtual void executeMission() = 0;
 
     // Virtual Destructor
-    virtual ~Astronaut() {
-        cout << "Astronaut " << name << " has completed their mission." << endl;
+    virtual ~MissionRole() {
+        cout << "MissionRole: " << name << " has completed their duty." << endl;
     }
 };
 
-// Derived Class 1 (Single Inheritance)
-class Scientist : public Astronaut {
-protected:
+// Derived Class: Scientist
+class Scientist : public MissionRole {
+private:
     string experiment;
 
 public:
     // Constructor
     Scientist(string n, int h, int e, string exp)
-        : Astronaut(n, h, e), experiment(exp) {}
+        : MissionRole(n, h, e), experiment(exp) {}
 
-    // Overriding display function (Run-time Polymorphism)
-    void displayStatus() const override {
-        Astronaut::displayStatus();
-        cout << "Scientist " << name << " is conducting experiment: " << experiment << "." << endl;
+    // Overriding the pure virtual function
+    void executeMission() override {
+        cout << "Scientist " << name << " with " << health << "% health and " 
+             << energy << "% energy is conducting experiment: " << experiment << "." << endl;
     }
 
     ~Scientist() {
-        cout << "Scientist " << name << " has finished their experiment." << endl;
+        cout << "Scientist " << name << " has concluded the experiment: " << experiment << "." << endl;
     }
 };
 
-// Derived Class 2 (Multilevel Inheritance)
-class Commander : public Scientist {
+// Derived Class: Commander
+class Commander : public MissionRole {
 private:
     string missionObjective;
 
 public:
     // Constructor
-    Commander(string n, int h, int e, string exp, string obj)
-        : Scientist(n, h, e, exp), missionObjective(obj) {}
+    Commander(string n, int h, int e, string objective)
+        : MissionRole(n, h, e), missionObjective(objective) {}
 
-    // Overriding display function (Run-time Polymorphism)
-    void displayStatus() const override {
-        Scientist::displayStatus();
-        cout << "Commander " << name << " has the mission objective: " << missionObjective << "." << endl;
+    // Overriding the pure virtual function
+    void executeMission() override {
+        cout << "Commander " << name << " with " << health << "% health and " 
+             << energy << "% energy is leading the mission: " << missionObjective << "." << endl;
     }
 
     ~Commander() {
-        cout << "Commander " << name << " has accomplished the mission objective." << endl;
+        cout << "Commander " << name << " has achieved the mission objective: " << missionObjective << "." << endl;
     }
 };
 
 // Main function
 int main() {
-    string astronautName, experiment, objective;
+    string astronautName, experiment, missionObjective;
     int health, energy;
 
-    // Get Astronaut details from the user
-    cout << "\nEnter the astronaut's name: ";
+    // Input for Astronaut details
+    cout << "\nEnter astronaut's name: ";
     getline(cin, astronautName);
-    cout << "Enter the astronaut's health (1-100): ";
+    cout << "Enter astronaut's health (1-100): ";
     cin >> health;
-    cout << "Enter the astronaut's energy (1-100): ";
+    cout << "Enter astronaut's energy (1-100): ";
     cin >> energy;
-    cin.ignore();  // Clear the newline character left by cin
+    cin.ignore();  // Clear newline left in the input buffer
 
-    // Get Scientist-specific details
-    cout << "Enter the experiment the scientist is conducting: ";
-    getline(cin, experiment);
+    // Choose Role (Scientist or Commander)
+    int roleChoice;
+    cout << "Choose astronaut's role (1: Scientist, 2: Commander): ";
+    cin >> roleChoice;
+    cin.ignore();  // Clear newline left in the input buffer
 
-    // Get Commander-specific details
-    cout << "Enter the mission objective for the commander: ";
-    getline(cin, objective);
+    // Create pointers to abstract class
+    MissionRole* astronaut = nullptr;
 
-    // Create a Commander object (which inherits from Scientist and Astronaut)
-    Commander commander1(astronautName, health, energy, experiment, objective);
+    if (roleChoice == 1) {
+        // Get Scientist-specific details
+        cout << "Enter the experiment the scientist is conducting: ";
+        getline(cin, experiment);
 
-    // Display the status using overridden methods (Run-time Polymorphism)
-    commander1.displayStatus();
+        // Create Scientist object dynamically
+        astronaut = new Scientist(astronautName, health, energy, experiment);
+    } else if (roleChoice == 2) {
+        // Get Commander-specific details
+        cout << "Enter the mission objective for the commander: ";
+        getline(cin, missionObjective);
+
+        // Create Commander object dynamically
+        astronaut = new Commander(astronautName, health, energy, missionObjective);
+    } else {
+        cout << "Invalid choice!" << endl;
+        return 1;  // Exit with error
+    }
+
+    // Execute the mission (Polymorphism using virtual function)
+    astronaut->executeMission();
+
+    // Clean up memory
+    delete astronaut;
 
     return 0;
 }
