@@ -10,17 +10,20 @@ protected:
     int energy;
 
 public:
-    // Constructor
+    // Default Constructor
+    Astronaut() : name(""), health(100), energy(100) {}
+
+    // Parameterized Constructor (Polymorphism: Constructor Overloading)
     Astronaut(string n, int h, int e) : name(n), health(h), energy(e) {}
 
-    // Function to display status
+    // Function to display status (can be overridden)
     virtual void displayStatus() const {
         cout << "Astronaut " << name << " has " << health << "% health and " << energy << "% energy." << endl;
     }
 
     // Virtual Destructor
     virtual ~Astronaut() {
-        cout << "Astronaut " << name << " has finished the mission." << endl;
+        cout << "Astronaut " << name << " has completed their mission." << endl;
     }
 };
 
@@ -30,17 +33,18 @@ protected:
     string experiment;
 
 public:
+    // Constructor
     Scientist(string n, int h, int e, string exp)
         : Astronaut(n, h, e), experiment(exp) {}
 
-    // Overriding display function
+    // Overriding display function (Run-time Polymorphism)
     void displayStatus() const override {
         Astronaut::displayStatus();
         cout << "Scientist " << name << " is conducting experiment: " << experiment << "." << endl;
     }
 
     ~Scientist() {
-        cout << "Scientist " << name << " has completed their experiment." << endl;
+        cout << "Scientist " << name << " has finished their experiment." << endl;
     }
 };
 
@@ -50,10 +54,11 @@ private:
     string missionObjective;
 
 public:
+    // Constructor
     Commander(string n, int h, int e, string exp, string obj)
         : Scientist(n, h, e, exp), missionObjective(obj) {}
 
-    // Overriding display function
+    // Overriding display function (Run-time Polymorphism)
     void displayStatus() const override {
         Scientist::displayStatus();
         cout << "Commander " << name << " has the mission objective: " << missionObjective << "." << endl;
@@ -89,7 +94,7 @@ int main() {
     // Create a Commander object (which inherits from Scientist and Astronaut)
     Commander commander1(astronautName, health, energy, experiment, objective);
 
-    // Display the status
+    // Display the status using overridden methods (Run-time Polymorphism)
     commander1.displayStatus();
 
     return 0;
