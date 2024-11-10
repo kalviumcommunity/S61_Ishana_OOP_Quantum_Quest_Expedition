@@ -2,115 +2,113 @@
 #include <string>
 using namespace std;
 
-// Abstract Base Class (with pure virtual function)
-class MissionRole {
+// Base Class with SRP for managing general astronaut details
+class Astronaut {
 protected:
     string name;
     int health;
     int energy;
 
 public:
-    // Constructor
-    MissionRole(string n, int h, int e) : name(n), health(h), energy(e) {}
+    Astronaut(string n, int h, int e) : name(n), health(h), energy(e) {}
 
-    // Pure Virtual Function (making this class abstract)
-    virtual void executeMission() = 0;
-
-    // Virtual Destructor
-    virtual ~MissionRole() {
-        cout << "MissionRole: " << name << " has completed their duty." << endl;
+    void displayStatus() const {
+        cout << "Astronaut " << name << " has " << health << "% health and " << energy << "% energy." << endl;
     }
 };
 
-// Derived Class: Scientist
-class Scientist : public MissionRole {
+// Scientist class (Inherits from Astronaut with SRP for scientific tasks)
+class Scientist : public Astronaut {
 private:
     string experiment;
 
 public:
-    // Constructor
     Scientist(string n, int h, int e, string exp)
-        : MissionRole(n, h, e), experiment(exp) {}
+        : Astronaut(n, h, e), experiment(exp) {}
 
-    // Overriding the pure virtual function
-    void executeMission() override {
-        cout << "Scientist " << name << " with " << health << "% health and " 
-             << energy << "% energy is conducting experiment: " << experiment << "." << endl;
-    }
-
-    ~Scientist() {
-        cout << "Scientist " << name << " has concluded the experiment: " << experiment << "." << endl;
+    void conductExperiment() const {
+        cout << "Scientist " << name << " is conducting experiment: " << experiment << "." << endl;
     }
 };
 
-// Derived Class: Commander
-class Commander : public MissionRole {
+// Commander class (Inherits from Astronaut with SRP for mission management)
+class Commander : public Astronaut {
 private:
     string missionObjective;
 
 public:
-    // Constructor
-    Commander(string n, int h, int e, string objective)
-        : MissionRole(n, h, e), missionObjective(objective) {}
+    Commander(string n, int h, int e, string obj)
+        : Astronaut(n, h, e), missionObjective(obj) {}
 
-    // Overriding the pure virtual function
-    void executeMission() override {
-        cout << "Commander " << name << " with " << health << "% health and " 
-             << energy << "% energy is leading the mission: " << missionObjective << "." << endl;
-    }
-
-    ~Commander() {
-        cout << "Commander " << name << " has achieved the mission objective: " << missionObjective << "." << endl;
+    void leadMission() const {
+        cout << "Commander " << name << " is leading the mission: " << missionObjective << "." << endl;
     }
 };
 
-// Main function
+// New MonitoringSystem class (SRP for monitoring external threats)
+class MonitoringSystem {
+private:
+    string threatType;
+    int threatDistance;
+
+public:
+    MonitoringSystem(string threat, int distance) : threatType(threat), threatDistance(distance) {}
+
+    void checkForThreat() const {
+        if (threatDistance < 100) {
+            cout << "Warning: " << threatType << " detected at " << threatDistance << " km distance. Take evasive actions!" << endl;
+        } else {
+            cout << "No immediate threats. " << threatType << " is at a safe distance of " << threatDistance << " km." << endl;
+        }
+    }
+};
+
+// Main function to demonstrate SRP-compliant functionality
 int main() {
-    string astronautName, experiment, missionObjective;
-    int health, energy;
+    string name, experiment, objective, threatType;
+    int health, energy, roleChoice, threatDistance;
 
-    // Input for Astronaut details
-    cout << "\nEnter astronaut's name: ";
-    getline(cin, astronautName);
-    cout << "Enter astronaut's health (1-100): ";
+    // User input for common astronaut details
+    cout << "Enter the astronaut's name: ";
+    getline(cin, name);
+    cout << "Enter the astronaut's health (1-100): ";
     cin >> health;
-    cout << "Enter astronaut's energy (1-100): ";
+    cout << "Enter the astronaut's energy (1-100): ";
     cin >> energy;
-    cin.ignore();  // Clear newline left in the input buffer
+    cin.ignore();
 
-    // Choose Role (Scientist or Commander)
-    int roleChoice;
+    // Role selection
     cout << "Choose astronaut's role (1: Scientist, 2: Commander): ";
     cin >> roleChoice;
-    cin.ignore();  // Clear newline left in the input buffer
-
-    // Create pointers to abstract class
-    MissionRole* astronaut = nullptr;
+    cin.ignore();
 
     if (roleChoice == 1) {
-        // Get Scientist-specific details
         cout << "Enter the experiment the scientist is conducting: ";
         getline(cin, experiment);
 
-        // Create Scientist object dynamically
-        astronaut = new Scientist(astronautName, health, energy, experiment);
+        Scientist scientist(name, health, energy, experiment);
+        scientist.displayStatus();
+        scientist.conductExperiment();
     } else if (roleChoice == 2) {
-        // Get Commander-specific details
         cout << "Enter the mission objective for the commander: ";
-        getline(cin, missionObjective);
+        getline(cin, objective);
 
-        // Create Commander object dynamically
-        astronaut = new Commander(astronautName, health, energy, missionObjective);
+        Commander commander(name, health, energy, objective);
+        commander.displayStatus();
+        commander.leadMission();
     } else {
-        cout << "Invalid choice!" << endl;
-        return 1;  // Exit with error
+        cout << "Invalid role choice!" << endl;
+        return 1;
     }
 
-    // Execute the mission (Polymorphism using virtual function)
-    astronaut->executeMission();
+    // Monitoring for threats
+    cout << "\nEnter the type of threat (e.g., Asteroid): ";
+    getline(cin, threatType);
+    cout << "Enter the distance of the threat from the spaceship (in km): ";
+    cin >> threatDistance;
 
-    // Clean up memory
-    delete astronaut;
+    MonitoringSystem monitoringSystem(threatType, threatDistance);
+    monitoringSystem.checkForThreat();
 
     return 0;
 }
