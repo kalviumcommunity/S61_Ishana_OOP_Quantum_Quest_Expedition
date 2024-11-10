@@ -1,8 +1,9 @@
 #include <iostream>
 #include <string>
+#include <memory>
 using namespace std;
 
-// Base Class with SRP for managing general astronaut details
+// Base Astronaut class implementing LSP with a performDuty method
 class Astronaut {
 protected:
     string name;
@@ -12,12 +13,15 @@ protected:
 public:
     Astronaut(string n, int h, int e) : name(n), health(h), energy(e) {}
 
-    void displayStatus() const {
+    virtual void displayStatus() const {
         cout << "Astronaut " << name << " has " << health << "% health and " << energy << "% energy." << endl;
     }
+
+    // Virtual function to be overridden by subclasses
+    virtual void performDuty() const = 0; // Pure virtual function for LSP
 };
 
-// Scientist class (Inherits from Astronaut with SRP for scientific tasks)
+// Scientist class inheriting from Astronaut and implementing performDuty
 class Scientist : public Astronaut {
 private:
     string experiment;
@@ -26,12 +30,12 @@ public:
     Scientist(string n, int h, int e, string exp)
         : Astronaut(n, h, e), experiment(exp) {}
 
-    void conductExperiment() const {
+    void performDuty() const override {
         cout << "Scientist " << name << " is conducting experiment: " << experiment << "." << endl;
     }
 };
 
-// Commander class (Inherits from Astronaut with SRP for mission management)
+// Commander class inheriting from Astronaut and implementing performDuty
 class Commander : public Astronaut {
 private:
     string missionObjective;
@@ -40,33 +44,29 @@ public:
     Commander(string n, int h, int e, string obj)
         : Astronaut(n, h, e), missionObjective(obj) {}
 
-    void leadMission() const {
+    void performDuty() const override {
         cout << "Commander " << name << " is leading the mission: " << missionObjective << "." << endl;
     }
 };
 
-// New MonitoringSystem class (SRP for monitoring external threats)
-class MonitoringSystem {
+// Engineer class inheriting from Astronaut and implementing performDuty
+class Engineer : public Astronaut {
 private:
-    string threatType;
-    int threatDistance;
+    string repairTask;
 
 public:
-    MonitoringSystem(string threat, int distance) : threatType(threat), threatDistance(distance) {}
+    Engineer(string n, int h, int e, string task)
+        : Astronaut(n, h, e), repairTask(task) {}
 
-    void checkForThreat() const {
-        if (threatDistance < 100) {
-            cout << "Warning: " << threatType << " detected at " << threatDistance << " km distance. Take evasive actions!" << endl;
-        } else {
-            cout << "No immediate threats. " << threatType << " is at a safe distance of " << threatDistance << " km." << endl;
-        }
+    void performDuty() const override {
+        cout << "Engineer " << name << " is performing repair task: " << repairTask << "." << endl;
     }
 };
 
-// Main function to demonstrate SRP-compliant functionality
+// Main function to demonstrate LSP-compliant functionality
 int main() {
-    string name, experiment, objective, threatType;
-    int health, energy, roleChoice, threatDistance;
+    string name, experiment, objective, task;
+    int health, energy, roleChoice;
 
     // User input for common astronaut details
     cout << "Enter the astronaut's name: ";
@@ -77,38 +77,34 @@ int main() {
     cin >> energy;
     cin.ignore();
 
-    // Role selection
-    cout << "Choose astronaut's role (1: Scientist, 2: Commander): ";
+    // User chooses the role
+    cout << "Choose astronaut's role (1: Scientist, 2: Commander, 3: Engineer): ";
     cin >> roleChoice;
     cin.ignore();
+
+    // Create a pointer to base class Astronaut, and assign specific subclass based on choice
+    unique_ptr<Astronaut> astronaut;
 
     if (roleChoice == 1) {
         cout << "Enter the experiment the scientist is conducting: ";
         getline(cin, experiment);
-
-        Scientist scientist(name, health, energy, experiment);
-        scientist.displayStatus();
-        scientist.conductExperiment();
+        astronaut = make_unique<Scientist>(name, health, energy, experiment);
     } else if (roleChoice == 2) {
         cout << "Enter the mission objective for the commander: ";
         getline(cin, objective);
-
-        Commander commander(name, health, energy, objective);
-        commander.displayStatus();
-        commander.leadMission();
+        astronaut = make_unique<Commander>(name, health, energy, objective);
+    } else if (roleChoice == 3) {
+        cout << "Enter the repair task the engineer is performing: ";
+        getline(cin, task);
+        astronaut = make_unique<Engineer>(name, health, energy, task);
     } else {
         cout << "Invalid role choice!" << endl;
         return 1;
     }
 
-    // Monitoring for threats
-    cout << "\nEnter the type of threat (e.g., Asteroid): ";
-    getline(cin, threatType);
-    cout << "Enter the distance of the threat from the spaceship (in km): ";
-    cin >> threatDistance;
-
-    MonitoringSystem monitoringSystem(threatType, threatDistance);
-    monitoringSystem.checkForThreat();
+    // Display status and perform the selected duty
+    astronaut->displayStatus();
+    astronaut->performDuty();
 
     return 0;
 }
